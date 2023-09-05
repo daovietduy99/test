@@ -3,24 +3,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  test_wfl:
-    name: test outcome
+  terraform_apply:
+    name: Terraform apply
     runs-on: ubuntu-latest
+ 
     steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: This will be failed
-        id: main
-        run: exit 0
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ~1.5.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        id: apply
+        #if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          export TF_LOG=DEBUG
+          terraform apply tfplan
+        env:
+          TF_CLI_AUTO_APPROVE: 1
         continue-on-error: true
-      
-      - name: Run on success
-        id: suc
-        run: echo 'Run on Success'
-        if: steps.main.outcome == 'success'
 
-      - name: Run on failure
-        id: fai
-        run: echo 'Run on Failure'
-        if: steps.main.outcome == 'failure'
+      - name: Terraform destroy # comment out the if condition to allow the destroy only when the apply failure
+        id: destroy
+        run: terraform destroy
+        env:
+          TF_CLI_AUTO_APPROVE: 1
+        # The following step allow run destroy only when the apply failure 
+        # if: steps.apply.outcome == 'failure'
