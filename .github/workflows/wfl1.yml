@@ -12,7 +12,7 @@ jobs:
 
       - name: This will be failed
         id: main
-        run: exit 1
+        run: exit 0
         continue-on-error: true
       
       - name: Run on success
