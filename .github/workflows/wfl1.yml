@@ -1,0 +1,26 @@
+name: Run Terraform Apply
+on:
+  workflow_dispatch:
+
+jobs:
+  test_wfl:
+    name: test outcome
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: This will be failed
+        id: main
+        run: "abcxyz"
+
+      - name: Run on success
+        id: suc
+        run: echo 'Run on Success'
+        if: steps.main.outcome != 'success'
+
+
+      - name: Run on failure
+        id: fai
+        run: echo 'Run on Failure'
+        if: steps.main.outcome != 'failure'
