@@ -14,16 +14,13 @@ jobs:
         id: main
         run: exit 1
         continue-on-error: true
-      - name: Step status
-        run: echo ${{ steps.main.outcome }}
-    #   - name: Run on success
-    #     id: suc
-    #     run: echo 'Run on Success'
-    #     if: steps.main.outcome != 'success'
-    #     continue-on-error: true
+      
+      - name: Run on success
+        id: suc
+        run: echo 'Run on Success'
+        if: steps.main.outcome == 'success'
 
-    #   - name: Run on failure
-    #     id: fai
-    #     run: echo 'Run on Failure'
-    #     if: steps.main.outcome != 'failure'
-    #     continue-on-error: true
+      - name: Run on failure
+        id: fai
+        run: echo 'Run on Failure'
+        if: steps.main.outcome == 'failure'
