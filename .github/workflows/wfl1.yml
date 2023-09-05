@@ -35,8 +35,6 @@ jobs:
 
       - name: Terraform destroy # comment out the if condition to allow the destroy only when the apply failure
         id: destroy
-        run: terraform destroy tfplan
-        env:
-          TF_CLI_AUTO_APPROVE: 1
+        run: terraform destroy --auto-approve
         # The following step allow run destroy only when the apply failure 
         # if: steps.apply.outcome == 'failure'
