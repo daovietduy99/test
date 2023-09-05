@@ -12,7 +12,7 @@ jobs:
 
       - name: This will be failed
         id: main
-        run: "abcxyz"
+        run: exit 1
         continue-on-error: true
 
       - name: Run on success
