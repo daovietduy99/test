@@ -33,6 +33,10 @@ jobs:
           TF_CLI_AUTO_APPROVE: 1
         continue-on-error: true
 
+      - name: Sleep for 10 minutes
+        run: sleep 20
+        if: steps.apply.outcome == 'success'
+
       - name: Terraform destroy # comment out the if condition to allow the destroy only when the apply failure
         id: destroy
         run: terraform destroy --auto-approve
