@@ -6,7 +6,29 @@ jobs:
   terraform_apply:
     name: Terraform apply
     runs-on: ubuntu-latest
- 
+    env:
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      TF_VAR_tenant_id: ${{ secrets.TF_VAR_TENANT_ID }}
+      TF_VAR_subscription_id: ${{ secrets.TF_VAR_SUBSCRIPTION_ID }}
+      TF_VAR_client_id: ${{ secrets.TF_VAR_CLIENT_ID }}
+      TF_VAR_client_secret: ${{ secrets.TF_VAR_CLIENT_SECRET }}
+      TF_VAR_environment_short_name: ${{ vars.TF_VAR_ENVIRONMENT_SHORT_NAME }}
+      TF_VAR_environment: ${{ vars.TF_VAR_ENVIRONMENT }}
+      TF_VAR_location: ${{ vars.TF_VAR_LOCATION }}
+      TF_VAR_location_short_name: ${{ vars.TF_VAR_LOCATION_SHORT_NAME }}
+      TF_VAR_company_short_name: ${{ vars.TF_VAR_COMPANY_SHORT_NAME }}
+
+      # steps:
+      #   - name: Run azcli command
+      #     run: 
+      #       # Register the "DisableNetworkWatcherAutocreation" feature.
+      #       az feature register --name 'DisableNetworkWatcherAutocreation' --namespace 'Microsoft.Network'
+      #       # Register the "Microsoft.Network" resource provider.
+      #       az provider register --name 'Microsoft.Network'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -34,11 +56,12 @@ jobs:
         continue-on-error: true
 
       - name: Sleep for 10 minutes
-        run: sleep 20
-        if: steps.apply.outcome == 'success'
+        run: sleep 600
+        if: steps.apply.outcome == 'success' && github.ref != 'refs/heads/main'
 
-      - name: Terraform destroy # comment out the if condition to allow the destroy only when the apply failure
+      - name: Terraform destroy
         id: destroy
         run: terraform destroy --auto-approve
-        # The following step allow run destroy only when the apply failure 
+        if: github.ref != 'refs/heads/main'
+        # The following condition allow run destroy only when the apply failure 
         # if: steps.apply.outcome == 'failure'
